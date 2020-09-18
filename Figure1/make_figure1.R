@@ -39,7 +39,7 @@ sim_dist <- get_barrier_intersect(node_df$long, node_df$lat,
 
 # convert to statistical distance
 stat_distance <- 5e-3*sim_dist + rnorm(length(sim_dist), sd = 0.5)
-stat_distance <- exp(-stat_distance)/(1 + exp(-stat_distance))
+stat_distance <- 1.5*exp(-stat_distance)/(1 + exp(-stat_distance))
 
 # make symmetric matrix
 stat_distance <- as.matrix(as.dist(stat_distance))
@@ -70,7 +70,10 @@ p <- pm_analysis(p, n_perms = 1e3, n_breaks = 50,
 #plot_coverage(p)
 
 # plot edge network
-plot1 <- plot_network(p, node_size = 2, edge_size = 0.7) +
+#col_scale <- rev(col_hotcold(20))[c(1,5,10,12,14,16,17,18,19,20)]
+#col_scale <- viridisLite::magma(10)
+col_scale <- rev(col_hotcold())
+plot1 <- plot_network(p, node_size = 2, edge_size = 0.7, zlim = c(0, 1), col_scale = col_scale) +
   ggtitle("A)")
 
 # plot spatial vs. statistical distance
@@ -87,7 +90,8 @@ stat_distance2[stat_distance2 == 0] <- NA
 p2 <- load_data(p, stat_distance2, check_delete_output = FALSE)
 
 # plot ellipses from spinoff project
-plot3 <- plot_ellipses(p2, node_size = 2, alpha = 0.3, n = 50) +
+plot3 <- plot_ellipses(p2, node_size = 2, alpha = 0.3, n = 50, eccentricity = 0.95,
+                       zlim = c(0, 1), col_scale = col_scale) +
   ggtitle("C)")
 
 # plot final hex map
@@ -96,6 +100,8 @@ plot4 <- plot_map(p, min_hex_coverage = 10, poly_list = barrier_list) +
 
 # produce combined plot
 plot_c <- cowplot::plot_grid(plot1, plot2, plot3, plot4)
+plot_c
 
 # save plot to file
-ggsave("Figure1/figure1.pdf", width = 8, height = 8)
+#ggsave("Figure1/figure1.pdf", width = 10, height = 7)
+#ggsave("Figure1/figure1.png", width = 10, height = 7, dpi = 100)
