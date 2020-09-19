@@ -1,11 +1,15 @@
 
-# test_false_posities.R
+# sim_false_posities_random.R
 #
 # Author: Bob Verity
 # Date: 2020-09-17
 #
 # Purpose:
-# TODO
+# Repeatedly simulate data from the null model, in which there are no barriers
+# or corridors. Pairwise statistical distances are drawn from the standard
+# normal distribution. Results are summarised for each simulation in terms of
+# the location of significant hexes (if any), and these results are saved to
+# file as an RDS object for reading into a separate plotting script.
 #
 # ------------------------------------------------------------------
 
@@ -15,12 +19,12 @@ library(cowplot)
 # load PlasmoMAPI package (TODO - replace with instructions to install from github)
 #devtools::load_all("/Users/rverity/Dropbox/Bob/Work/My Programs/Barriers to gene flow/PlasmoMAPI")
 
-set.seed(2)
+set.seed(1)
 
 # define parameters
-reps <- 1e2
+reps <- 1e4
 L <- 5
-n_deme <- 30
+n_deme <- 50
 border_coords <- data.frame(long = c(-L, -L, L, L, -L),
                             lat = c(-L, L, L, -L, -L))
 
@@ -33,8 +37,6 @@ t0 <- Sys.time()
 
 # repeat analysis multiple times
 which_lower <- which_upper <- list()
-hex_values <- hex_values2 <- hex_values3 <- hex_coverage <- y_obs <- list()
-sig <- rep(NA, reps)
 for (i in seq_len(reps)) {
   message(sprintf("rep %s", i))
   
@@ -55,58 +57,28 @@ for (i in seq_len(reps)) {
   }
   
   # assign edges to hexes
-  p <- assign_map(p, eccentricity = 0.9)
+  p <- assign_map(p, eccentricity = 0.95)
   
   # load data
   p <- load_data(p, stat_distance, check_delete_output = FALSE)
   
   # run analysis
-  p <- pm_analysis(p, n_perms = 1e3, n_breaks = 1,
+  p <- pm_analysis(p, n_perms = 1e3, n_breaks = 100,
                    min_dist = 0, max_dist = Inf,
                    min_group_size = 5)
   
   
-  #plot(p$output$hex_values)
-  #abline(h = c(-1.96, 1.96))
-  sig[i] <- mean(abs(p$output$hex_values) > 1.96, na.rm = TRUE)
-  
-  #p$output$hex_values <- p$output$hex_values2
-  p$output$n_eff <- 100
-  
-  # get significant hexes
-  s <- get_significant_hexes(p)
+  # store results
+  s <- get_significant_hexes(p, FDR = 0.05)
   which_lower[[i]] <- s$which_lower
   which_upper[[i]] <- s$which_upper
-  hex_values[[i]] <- p$output$hex_values
-  hex_values2[[i]] <- p$output$hex_values2
-  hex_values3[[i]] <- p$output$hex_values3
-  hex_coverage[[i]] <- p$output$hex_coverage
-  y_obs[[i]] <- p$output$y_obs
 }
 Sys.time() - t0
 
-# count up false positives overall
-any_pos <- mapply(length, which_lower) + mapply(length, which_upper)
-sum(any_pos > 0)
-mean(any_pos > 0) * 100
+# make return list and save to file
+ret <- list(which_lower = which_lower,
+            which_upper = which_upper,
+            p = p)
+saveRDS(ret, "null_tests/sim_false_positives_random.rds")
 
-hex_values <- do.call(rbind, hex_values)
-hex_values2 <- do.call(rbind, hex_values2)
-hex_values3 <- do.call(rbind, hex_values3)
-hex_coverage <- do.call(rbind, hex_coverage)
 
-z <- hex_values[hex_coverage > 20]
-
-sd(z)
-
-plot(density(as.vector(z)[!is.na(as.vector(z))]))
-xv <- seq(-5, 5, l = 1001)
-lines(xv, dnorm(xv), col = 2)
-lines(xv, dnorm(xv, sd = sd(z, na.rm = T)), col = 3)
-#lines(xv, dt(xv, df = 3))
-
-#plot(rowMeans(z > 1.96 | z < -1.96, na.rm = TRUE))
-#mean(z > 1.96 | z < -1.96, na.rm = TRUE) * 100
-
-#plot(sig)
-mean(sig)
