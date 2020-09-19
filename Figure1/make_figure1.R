@@ -103,5 +103,5 @@ plot_c <- cowplot::plot_grid(plot1, plot2, plot3, plot4)
 plot_c
 
 # save plot to file
-#ggsave("Figure1/figure1.pdf", width = 10, height = 7)
-#ggsave("Figure1/figure1.png", width = 10, height = 7, dpi = 100)
+ggsave("Figure1/figure1.pdf", width = 10, height = 7)
+ggsave("Figure1/figure1.png", width = 10, height = 7, dpi = 100)
