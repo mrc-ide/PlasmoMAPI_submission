@@ -62,5 +62,5 @@ plot_c <- cowplot::plot_grid(plot1, cowplot::plot_grid(plot2, plot3, nrow = 2), 
 plot_c
 
 # save to file
-ggsave("Figure3_DRC/DRC_analysis.pdf", plot = plot_c, width = 13, height = 8)
-ggsave("Figure3_DRC/DRC_analysis.png", plot = plot_c, width = 13, height = 8, dpi = 100)
+ggsave("Figure3_DRC/DRC_analysis.pdf", plot = plot_c, width = 13, height = 7)
+ggsave("Figure3_DRC/DRC_analysis.png", plot = plot_c, width = 13, height = 7, dpi = 100)
