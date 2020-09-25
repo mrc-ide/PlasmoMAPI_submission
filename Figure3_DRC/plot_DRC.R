@@ -25,8 +25,6 @@ x <- readRDS("Figure3_DRC/run_DRC.rds")
 # get DRC map
 world_map <- rworldmap::getMap(resolution = "coarse")
 drc_map <- subset(world_map, ISO3 == "COD")
-drc_coords <- as.data.frame(drc_map@polygons[[1]]@Polygons[[1]]@coords)
-names(drc_coords) <- c("long", "lat")
 
 # create base map
 plot_base <- ggplot() + theme_bw(base_size = 14) +
@@ -42,8 +40,8 @@ plot_base <- ggplot() + theme_bw(base_size = 14) +
 # produce plots
 plot1 <- plot_map(x$p1, min_hex_coverage = 10, base_plot = plot_base, point_stroke = point_stroke) +
   coord_sf(xlim = c(12, 32), ylim = c(-13, 6)) +
-  ggplot2::ggtitle("A) all ranges") +
-  theme(legend.position = "bottom")
+  ggplot2::ggtitle("A) all ranges")# +
+  #theme(legend.position = "bottom")
 plot1
 
 plot2 <- plot_map(x$p2, min_hex_coverage = 10, base_plot = plot_base, point_stroke = point_stroke) +
@@ -62,5 +60,5 @@ plot_c <- cowplot::plot_grid(plot1, cowplot::plot_grid(plot2, plot3, nrow = 2), 
 plot_c
 
 # save to file
-ggsave("Figure3_DRC/DRC_analysis.pdf", plot = plot_c, width = 13, height = 7)
-ggsave("Figure3_DRC/DRC_analysis.png", plot = plot_c, width = 13, height = 7, dpi = 100)
+ggsave("Figure3_DRC/DRC_analysis.pdf", plot = plot_c, width = 16, height = 7)
+ggsave("Figure3_DRC/DRC_analysis.png", plot = plot_c, width = 16, height = 7, dpi = 100)

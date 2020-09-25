@@ -11,11 +11,18 @@
 # ------------------------------------------------------------------
 
 library(magrittr)
+library(rworldmap)
 
 # load PlasmoMAPI package (TODO - replace with instructions to install from github)
 #devtools::load_all("/Users/rverity/Dropbox/Bob/Work/My Programs/Barriers to gene flow/PlasmoMAPI")
 
 set.seed(1)
+
+# get DRC border shape
+world_map <- rworldmap::getMap(resolution = "coarse")
+drc_map <- subset(world_map, ISO3 == "COD")
+drc_coords <- as.data.frame(drc_map@polygons[[1]]@Polygons[[1]]@coords)
+names(drc_coords) <- c("long", "lat")
 
 # load data
 raw_data <- pm_file("DRC_relatedness.rds")

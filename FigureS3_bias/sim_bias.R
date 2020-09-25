@@ -32,7 +32,7 @@ border_coords <- data.frame(long = c(-L, -L, L, L, -L),
 #                     data.frame(long = c(-1,1,1,-1,-1)*2, lat = c(1,1,-1,-1,1)*0.5 - 4))
 barrier_list <- list(data.frame(long = c(-4,-3,-3,2,2,-4,-4), lat = c(4,4,-2,-2,-3,-3,4)),
                      data.frame(long = c(2,3,3,2,2), lat = c(-1,-1,-4,-4,-1)))
-barrier_penalty <- c(5, -5)
+barrier_penalty <- c(4, -4) # NB. penalty of 4 means friction is 5-times higher inside barrier
 
 # create new PlasmoMAPI project
 p <- pm_project()
